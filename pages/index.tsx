@@ -37,30 +37,24 @@ const IndexRoute: React.FC = () => {
   useEffect(() => {
     api.list(initialValues()).then((items) => {
       setItems(items);
-      //setStatus(Status.success);
     });
   }, []);
 
   const handleAddItem = (event: FormEvent<Form>) => {
     event.preventDefault();
 
-    //const textProduct = event.target["productInput"].value;
     const text = event.currentTarget.productInput.value.trim();
 
-    //if (!textProduct || items.includes(textProduct)) return;
     if (!text) return;
 
-    //setItems((items) => items.concat(textProduct));
     api.create(text).then((item) => {
       setItems((items) => items.concat(item));
     });
 
-    //event.target["productInput"].value = "";
     event.currentTarget.productInput.value = "";
   };
 
   const handleRemoveItem = (id: Item["id"]) => {
-    //setItems((items) => items.filter((item, itemIndex) => itemIndex !== index));
     api.remove(id).then(() => setItems((items) => items.filter((item) => item.id !== id)));
   };
 
