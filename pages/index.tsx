@@ -45,7 +45,7 @@ const IndexRoute: React.FC = () => {
 
     const text = event.currentTarget.productInput.value.trim();
 
-    if (!text) return;
+    if (!text || items.some((item) => item["text"] === text)) return;
 
     api.create(text).then((item) => {
       setItems((items) => items.concat(item));
