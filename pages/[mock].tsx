@@ -1,5 +1,8 @@
-import React, {FormEvent, useEffect, useState} from "react";
+import {ParsedUrlQuery} from "querystring";
+
+import React, {FormEvent, useState} from "react";
 import {Button, VStack, Text, Stack, Input, Spinner} from "@chakra-ui/react";
+import {GetStaticPaths, GetStaticProps} from "next";
 
 import api from "../item/api";
 import {Item} from "../item/types";
@@ -9,7 +12,7 @@ enum Status {
   success = "success",
 }
 
-const initialValues = (): Item[] => {
+/* const initialValues = (): Item[] => {
   const localProducts = typeof window !== "undefined" ? localStorage.getItem("marketlist") : null;
 
   if (typeof localProducts === "string") {
@@ -19,17 +22,27 @@ const initialValues = (): Item[] => {
   } else {
     return [];
   }
-};
+}; */
 
 interface Form extends HTMLFormElement {
   productInput: HTMLInputElement;
 }
 
-const IndexRoute: React.FC = () => {
-  const [items, setItems] = useState<Item[]>(initialValues);
+interface Props {
+  itemsMock: Item[];
+}
+
+interface Params extends ParsedUrlQuery {
+  mock: string;
+}
+
+const IndexRoute: React.FC<Props> = ({itemsMock}) => {
+  const [items, setItems] = useState<Item[]>(itemsMock);
   const [status, setStatus] = useState<Status>(Status.Init);
 
-  useEffect(() => {
+  console.log(itemsMock);
+
+  /*  useEffect(() => {
     localStorage.setItem("marketlist", JSON.stringify(items));
     setStatus(Status.success);
   }, [items]);
@@ -38,7 +51,7 @@ const IndexRoute: React.FC = () => {
     api.list(initialValues()).then((items) => {
       setItems(items);
     });
-  }, []);
+  }, []); */
 
   const handleAddItem = (event: FormEvent<Form>) => {
     event.preventDefault();
@@ -58,13 +71,13 @@ const IndexRoute: React.FC = () => {
     api.remove(id).then(() => setItems((items) => items.filter((item) => item.id !== id)));
   };
 
-  if (status === Status.Init) {
+  /* if (status === Status.Init) {
     return (
       <VStack marginTop={6}>
         <Spinner />
       </VStack>
     );
-  }
+  } */
 
   return (
     <VStack>
@@ -106,6 +119,23 @@ const IndexRoute: React.FC = () => {
       )}
     </VStack>
   );
+};
+
+export const getStaticProps: GetStaticProps<any, Params> = async ({params}: any) => {
+  const itemsMock = await api.mock.list(params.mock);
+
+  return {
+    props: {
+      itemsMock,
+    },
+  };
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  return {
+    paths: [],
+    fallback: process.env.NODE_ENV === "production" ? false : "blocking",
+  };
 };
 
 export default IndexRoute;
