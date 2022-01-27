@@ -3,6 +3,7 @@ import {Button, VStack, Text, Stack, Input, Spinner} from "@chakra-ui/react";
 
 import api from "../item/api";
 import {Item} from "../item/types";
+import ItemCard from "../item/components/ItemCard";
 
 enum Status {
   Init = "init",
@@ -83,23 +84,7 @@ const IndexRoute: React.FC = () => {
       </Stack>
       {items.length ? (
         items.map((item) => (
-          <Stack
-            key={item.id}
-            alignItems="center"
-            borderColor="gray.100"
-            borderRadius="md"
-            borderWidth={1}
-            data-testid="item"
-            direction="row"
-            justifyContent="space-between"
-            padding={3}
-            width="80%"
-          >
-            <Text>{item.text}</Text>
-            <Button colorScheme="red" variant="link" onClick={() => handleRemoveItem(item.id)}>
-              delete
-            </Button>
-          </Stack>
+          <ItemCard key={item.id} item={item} onRemove={(id) => handleRemoveItem(id)} />
         ))
       ) : (
         <Text color="gray.500">There are no products in the list</Text>
